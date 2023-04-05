@@ -53,3 +53,48 @@ lux_name = "LUX"
 
   return(data_corrected_lux)
 }
+
+
+
+#' Remove blank from each signal
+#'
+#' `correct_blank` Remove the background signal from the raw signal
+#'
+#' @param data A data frame or a tibble with at least a column 'Time', 'Signal',
+#' 'Content' and 'Value'.
+#' @param blank_name A string corresponding to the name of the blank treatment in
+#' 'Content' column.
+#' @param by_Group Correct the blank by group by using the 'Group' column if `TRUE`.
+#' @details
+#' * 'Value' must be raw and not blank corrected.
+#' * If applying crosstalk correction for luminescence, it must be done before this step
+#' @returns A tibble with with same column as in data plus a column Value_BC (for
+#' Blank Corrected) and column Blank
+#' @export
+#' @examples
+#' data <- Ecoli_T7_24well_Lux_2Fluo_OD
+#' correct_blank(data, "Blank B", by_Group = TRUE)
+#'
+#' # with crosstalk correction
+#' crosstalk_lux_ref <- ct_calibration_24wells_4titude_black_vision
+#' data_lux_corrected <- correct_crosstalk_lux(data, crosstalk_lux_ref, "LUX")
+#' correct_blank(data_lux_corrected, "Blank B", by_Group = TRUE)
+correct_blank <- function(data,
+                          blank_name = "Blank B",
+                          by_Group = FALSE) {
+
+  if(by_Group) data <- data %>% group_by(.data$Group)
+
+  blank <- data %>%
+    group_by(.data$Signal, .add = T) %>%
+    filter(.data$Content == blank_name, .data$Value != "NA") %>%
+    do(lm(Value ~ Time , data = .) %>%
+         predict(., tibble(Time = unique(data$Time))) %>%
+         tibble(Time = unique(data$Time), Blank = .))
+
+  data <- full_join(data, blank) %>%
+    mutate(Value_BC = .data$Value - .data$Blank) %>%
+    ungroup()
+
+  return(data)
+}

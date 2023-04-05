@@ -16,6 +16,7 @@ Imports:
     readxl,
     rlang,
     segmented,
+    stats,
     stringr,
     tidyr
 Depends: 
