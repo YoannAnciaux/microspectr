@@ -27,7 +27,7 @@
 correct_crosstalk_lux <- function(data,
                                   crosstalk_lux_ref,
                                   lux_name = NULL) {
-lux_name = "LUX"
+
   blank     <- crosstalk_lux_ref$blank
   ct_matrix <- crosstalk_lux_ref$ct_matrix
 

@@ -56,5 +56,6 @@ are \code{NA} in 'Value_Rescaled'
 data <- Ecoli_T7_24well_Lux_2Fluo_OD
 rescale_from_well <- c("LUX" = 0, "OD" = 0, "SYTOX" = 5)
 rescale_from_control <- c("CFP" = 10)
-rescale_data(data, "Value", rescale_from_well, rescale_from_control, control_name = "Positive control P",  by_Group = TRUE)
+rescale_data(data, "Value", rescale_from_well, rescale_from_control,
+             control_name = "Positive control P",  by_Group = TRUE)
 }
